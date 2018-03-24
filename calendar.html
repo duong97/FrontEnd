@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+	<title> Calendar </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">  
+	<script type="text/javascript" src="vendor/bootstrap.js"></script>
+ 	<script type="text/javascript" src="script.js"></script>
+ 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="vendor/bootstrap.css">
+	<link rel="stylesheet" href="vendor/font-awesome.css">
+ 	<link rel="stylesheet" href="style.css">
+ 	<style>
+		#calendar{width: 	; padding: inherit}
+		#calendar a{text-decoration: none; color: black;}
+		table[class^="month"]{
+		    display: inline-block;
+		    width: 25%;
+		    margin: auto;
+		    margin-bottom: 80px;
+		    height: 225px;
+		    overflow: visible;
+		    padding: 55px;
+		}
+		td{text-align: center; padding: 7px;}
+		.weekend-bg{background: #d6d6d6;}
+		.weekend{color: red!important; font-weight: bold}
+		.special-holiday-bg{background: #93ce91; color: white}
+		.today{background: teal; color: white!important;}
+		.weekend.today{font-size: 30px;}
+		.event{background: #ccc; color: black!important;}
+		.error{color: red; text-decoration: italic;}
+		.event.today{background: linear-gradient(#008080, #ccc);}
+	</style>
+</head>
+<body >
+ 	
+ 	<!-- Year selector -->
+	<div class="form-group" style="margin: 30px 50px 0 50px" id="yearSelector">
+		<span class="pull-right dBtnGrey" id="clearDataBtn">Clear data</span>
+		<label for="sel1">Select year:</label>
+		<select class="form-control yearSelectorBody" style="width: 100px;">
+			<script>
+				var crtYear = (new Date()).getFullYear();
+				for(var i = crtYear - 5; i < crtYear + 5; i++){
+					if(i === crtYear){
+						$('.yearSelectorBody').append('<option selected>'+i+'</option>');
+						continue;
+					}
+					$('.yearSelectorBody').append('<option value="'+i+'">'+i+'</option>');
+				}
+			</script>
+		</select>
+	</div>
+	<!-- Calendar -->
+	<div id="calendar"></div>
+	<!-- Modal to add event -->
+	<!-- <a class="btn btn-primary" data-toggle="modal" href='#modal-event'>Trigger modal</a> -->
+	<div class="modal fade" id="modal-event">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Add event</h4>
+					<p id="addEventDateModal"></p>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="container" id="listEvent">
+							<legend>List event</legend>
+							<ul class="list-group">
+								
+							</ul>
+						</div>
+						<div class="form-group">
+							<label for="">Event name</label>
+							<input type="text" class="form-control" id="eventName">
+						</div>
+						<p class="error"></p>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" id="saveEventBtn">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+ 		
+ 	<script type="text/javascript">
+ 		console.log(localStorage);
+ 		//localStorage.clear();
+ 		var dateSelected = '', addedEventName = [], addedEventDate = [];
+ 		//create init calendar and change year
+ 		$('#yearSelector').on('change',function(){
+ 			createCalendar($('.yearSelectorBody').val(), 'medium');
+ 		});
+ 		createCalendar((new Date()).getFullYear(), 'medium');
+ 		if (localStorage.getItem("eventName") !== null) {
+ 			addedEventName = JSON.parse(localStorage.eventName);
+	 		addedEventDate = JSON.parse(localStorage.eventDate);
+ 		}
+	 		
+ 		$('.date').each(function(){
+ 			if(addedEventDate != ''){
+ 				for (var i = 0; i < addedEventDate.length; i++) {
+	 				if( $(this).data('dateformatted') == addedEventDate[i] ){
+	 					$(this).parent().addClass('event');
+		 			}
+	 			}
+ 			}
+	 			
+ 		});
+
+ 		//Save event button
+ 		var elmSelected = '';
+ 		$('#saveEventBtn').on("click", function(){
+ 			if($('#eventName').val() == "") return ;
+ 			if (typeof(Storage) !== "undefined") {
+ 				if(addedEventName.indexOf($('#eventName').val()) != -1){
+ 					$('.error').text("Name is already exists!");
+ 					$(this).removeAttr('data-dismiss');
+ 				} else {
+ 					addedEventName.push($('#eventName').val());
+	 				addedEventDate.push(dateSelected);
+				    localStorage.eventName = JSON.stringify(addedEventName);
+				    localStorage.eventDate = JSON.stringify(addedEventDate);
+				    elmSelected.parent().addClass("event");
+				    $(this).attr('data-dismiss','modal');
+ 				}
+			} else {
+			    alert("Sorry! No Web Storage support!");
+			}
+ 		});
+ 		//get data of element show the modal
+ 		$('#modal-event').on('show.bs.modal', function (e) {
+			dateSelected = $(e.relatedTarget).data('dateformatted');
+			elmSelected = $(e.relatedTarget);
+			$('#eventName').val("");
+			$('#addEventDateModal').text(dateSelected);
+			if(addedEventDate != ''){
+				for (var i = 0; i < addedEventDate.length; i++) {
+					if(addedEventDate[i] == dateSelected){
+						$('#listEvent ul.list-group').append('<li class="list-group-item">'+addedEventName[i]+'<i class="fa fa-trash-o pull-right delEventBtn" style="font-size: 24px; cursor: pointer;"></i></li>');
+					}
+				}
+			}
+			if($('#listEvent ul.list-group').children().length == 0){
+ 				$('#listEvent ul.list-group').append('<img src="images/empty.png" style="width: 15%">')
+ 			}
+		});
+		$('#eventName').on('focus', function(){
+			$('.error').empty();
+		});
+		//Clear append element after hide modal
+		$('#modal-event').on('hide.bs.modal', function (e) {
+			$('#listEvent ul.list-group').empty();
+		});
+		//delete event
+		$(document).on('click', '.delEventBtn', function(){
+			var cf = confirm("Are you sure want to clear all your event?");
+	    	if(cf){
+	    		var name = localStorage.eventName, date = localStorage.eventDate;
+	    		name = name.replace('"'+$(this).closest('li').text()+'"','');
+	    		name = name.replace("[,","[");
+	    		name = name.replace(",]","]");
+	    		name = name.replace(",,",",");
+	    		name = name.replace("[]","");
+	    		date = date.replace('"'+$('#addEventDateModal').text()+'"','');
+	    		date = date.replace("[,","[");
+	    		date = date.replace(",]","]");
+	    		date = date.replace(",,",",");
+	    		date = date.replace("[]","");
+	    		if(name === '') {
+	    			localStorage.clear();
+	    		} else {
+	    			localStorage.eventName = name;
+				localStorage.eventDate = date;
+	    		}
+	    		
+				$(this).closest("li").remove();
+	    	}
+			
+		});
+		//console.log(localStorage);
+	    //Clear data
+	    $('#clearDataBtn').on('click',function(){
+	    	var cf = confirm("Are you sure want to clear all your event?");
+	    	if(cf){
+	    		localStorage.clear();
+		    	location.reload();
+	    	}
+	    });
+ 	</script>
+</body>
+</html>

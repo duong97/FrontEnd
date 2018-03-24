@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+	<title> Drag and Drop </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">  
+	<script type="text/javascript" src="vendor/bootstrap.js"></script>
+ 	<script type="text/javascript" src="script.js"></script>
+	<link rel="stylesheet" href="vendor/bootstrap.css">
+	<link rel="stylesheet" href="vendor/font-awesome.css">
+ 	<link rel="stylesheet" href="style.css">
+ 	<style type="text/css">
+ 		.dragArea{width: 328px; border: 1px solid black; margin-top: 20px; padding: 10px;}
+ 		.dragItem{display: inline-block;}
+ 	</style>
+</head>
+<body >
+	<div class="container">
+		<p>/*Drag button and drop to DIV or INPUT FIELD*/</p>
+		<span class="dBtnGreen dragBtn">Drag Item 1</span>
+		<span class="dBtnGrey dragBtn">Drag Item 2</span>
+		<span class="dBtnRed dragBtn">Drag Item 3</span>
+		<span class="dBtnYellow dragBtn">Drag Item 4</span>
+		<div class="dragArea" style="min-height: 50px; border: 2px solid black"></div>
+		<input type="text" class="form-control dragArea" placeholder="input field">
+	</div>
+	
+	
+	<script type="text/javascript">
+		allowDrag("dragBtn","dragArea","text",1,"hehe");
+	</script>
+</body>
+</html>
