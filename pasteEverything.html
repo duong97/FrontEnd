@@ -76,7 +76,11 @@
 
   <script type="text/javascript">
     $(document).ready(function(){
-      var t = localStorage.text;
+      var t = '', i = '';
+      if(typeof localStorage.text != 'undefined')
+        t = localStorage.text;
+      if(typeof localStorage.img != 'undefined')
+        i = localStorage.img;
       // var aKeyword = [
       //   //chung
       //   'for','while','if','then','else','elseif','switch','case','break','continue','new', 'class','public',
@@ -94,7 +98,7 @@
       // ];
       t = htmlEntities(t);
       $('#txt').html(t);
-      $('#img').html(localStorage.img);
+      $('#img').html(i);
       $("img").on('click',function(event){
         
       });
