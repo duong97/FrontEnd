@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<script type="text/javascript" src="vendor/bootstrap.js"></script>
+	<script type="text/javascript" src="vendor/jquery.js"></script>
  	<script type="text/javascript" src="script.js"></script>
 	<link rel="stylesheet" href="vendor/bootstrap.css">
 	<link rel="stylesheet" href="vendor/font-awesome.css">
@@ -19,5 +20,11 @@
 	  <li class="list-group-item"><a target="_blank" href='pasteEverything.html'>Paste Everything</a></li>
 	</ul>
 </div>
+
+<script>
+var fs = require('fs');
+var files = fs.readdirSync('/assets/photos/');
+</script>
+
 </body>
 </html>
